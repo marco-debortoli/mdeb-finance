@@ -1,4 +1,4 @@
-# MDEB Finance Tracker
+# MDEB Financial Tracking Ledger
 
 This is a very early stage project (as you can tell from the lack of code!) - more code to follow.
 

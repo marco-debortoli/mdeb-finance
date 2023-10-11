@@ -1,4 +1,4 @@
-module github.com/marco-debortoli/mdeb-finance/server
+module github.com/marco-debortoli/mdeb-ledger/server
 
 go 1.21.0
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-chi/render"
 
-	"github.com/marco-debortoli/mdeb-finance/server/models"
+	"github.com/marco-debortoli/mdeb-ledger/server/models"
 )
 
 /*func ListCategories(w http.ResponseWriter, r *http.Request) {

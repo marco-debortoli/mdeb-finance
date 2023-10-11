@@ -19,10 +19,9 @@ func startServer() {
 
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 
-	// r.Route()
+	/*r.Route("/categories", func(r chi.Router) {
+	  r.Get("/", api.ListCategories)
+	})*/
 
-	r.Get("/", func(w http.ResponseWriter, _ *http.Request) {
-		w.Write([]byte("Hello World!"))
-	})
 	http.ListenAndServe(":3000", r)
 }

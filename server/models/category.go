@@ -34,7 +34,7 @@ func getCategoryCollection(database *mongo.Database) *mongo.Collection {
 }
 
 // Function to create a TransactionCategory from a string name and type
-func CreateTransactionCategory(ctx context.Context, database *mongo.Database, name string, catType CategoryType) (TransactionCategory, error) {
+func CreateTransactionCategory(database *mongo.Database, name string, catType CategoryType) (TransactionCategory, error) {
 	collection := getCategoryCollection(database)
 
 	category := TransactionCategory{
@@ -43,7 +43,7 @@ func CreateTransactionCategory(ctx context.Context, database *mongo.Database, na
 		Active: true,
 	}
 
-	res, err := collection.InsertOne(ctx, category)
+	res, err := collection.InsertOne(context.Background(), category)
 	if err == nil {
 		category.ID = res.InsertedID.(primitive.ObjectID)
 	}
@@ -52,40 +52,40 @@ func CreateTransactionCategory(ctx context.Context, database *mongo.Database, na
 }
 
 // Functions to retrieve a lists of TransactionCategory objects from the database
-func GetTransactionCategoryList(ctx context.Context, database *mongo.Database, filter bson.M) []TransactionCategory {
+func GetTransactionCategoryList(database *mongo.Database, filter bson.M) []TransactionCategory {
 	collection := getCategoryCollection(database)
 
-	cursor, err := collection.Find(ctx, filter)
+	cursor, err := collection.Find(context.Background(), filter)
 	if err != nil {
 		panic(err)
 	}
 
 	var results []TransactionCategory
 
-	if err = cursor.All(ctx, &results); err != nil {
+	if err = cursor.All(context.Background(), &results); err != nil {
 		panic(err)
 	}
 
 	return results
 }
 
-func GetAllTransactionCategories(ctx context.Context, database *mongo.Database) []TransactionCategory {
-	return GetTransactionCategoryList(ctx, database, bson.M{})
+func GetAllTransactionCategories(database *mongo.Database) []TransactionCategory {
+	return GetTransactionCategoryList(database, bson.M{})
 }
 
-func GetActiveTransactionCategories(ctx context.Context, database *mongo.Database) []TransactionCategory {
-	return GetTransactionCategoryList(ctx, database, bson.M{"active": true})
+func GetActiveTransactionCategories(database *mongo.Database) []TransactionCategory {
+	return GetTransactionCategoryList(database, bson.M{"active": true})
 }
 
-func GetInactiveTransactionCategories(ctx context.Context, database *mongo.Database) []TransactionCategory {
-	return GetTransactionCategoryList(ctx, database, bson.M{"active": false})
+func GetInactiveTransactionCategories(database *mongo.Database) []TransactionCategory {
+	return GetTransactionCategoryList(database, bson.M{"active": false})
 }
 
 // Function to retrieve a single TransactionCategory by ObjectID
-func GetTransactionCategory(ctx context.Context, database *mongo.Database, id primitive.ObjectID) (TransactionCategory, error) {
+func GetTransactionCategory(database *mongo.Database, id primitive.ObjectID) (TransactionCategory, error) {
 	collection := getCategoryCollection(database)
 
-	result := collection.FindOne(ctx, bson.M{"_id": id})
+	result := collection.FindOne(context.Background(), bson.M{"_id": id})
 
 	var found TransactionCategory
 	err := result.Decode(&found)
@@ -94,10 +94,10 @@ func GetTransactionCategory(ctx context.Context, database *mongo.Database, id pr
 }
 
 // Update the active status of a TransactionCategory
-func UpdateTransactionCategoryActive(ctx context.Context, database *mongo.Database, id primitive.ObjectID, active bool) error {
+func UpdateTransactionCategoryActive(database *mongo.Database, id primitive.ObjectID, active bool) error {
 	collection := getCategoryCollection(database)
 
-	_, err := collection.UpdateByID(ctx, id, bson.M{"active": active})
+	_, err := collection.UpdateByID(context.Background(), id, bson.M{"active": active})
 
 	return err
 }

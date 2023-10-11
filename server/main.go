@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -15,8 +16,14 @@ import (
 func main() {
 	fmt.Printf("Connecting to MongoDB\n")
 
-	ctx := context.TODO()
-	clientOptions := options.Client().ApplyURI("mongodb://root:password@localhost:27017")
+	clientOptions := options.Client()
+	clientOptions.ApplyURI("mongodb://root:password@localhost:27017")
+
+	// Set the default timeout for all operations to be 5 seconds
+	clientOptions.SetTimeout(30 * time.Second)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
@@ -39,13 +46,13 @@ func main() {
 		Amount:   amount,
 	}*/
 
-	newCategory, err := models.CreateTransactionCategory(ctx, database, "Testing", "credit")
+	newCategory, err := models.CreateTransactionCategory(database, "Testing", "credit")
 	fmt.Println(newCategory)
 	if err != nil {
 		panic(err)
 	}
 
-	foundResult, _ := models.GetTransactionCategory(ctx, database, newCategory.ID)
+	foundResult, _ := models.GetTransactionCategory(database, newCategory.ID)
 
 	resJson, _ := json.Marshal(foundResult)
 	fmt.Println(string(resJson))

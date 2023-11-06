@@ -25,6 +25,8 @@ func StartServer(apiConfig *api.APIConfig) {
 	v1Router.Get("/categories", apiConfig.HandleListCategory)
 	v1Router.Get("/categories/{id}", apiConfig.HandleGetCategory)
 
+	v1Router.Post("/transactions", apiConfig.HandleCreateTransaction)
+
 	r.Mount("/api/v1", v1Router)
 
 	srv := &http.Server{

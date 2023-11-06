@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"slices"
 	"strconv"
@@ -40,7 +41,8 @@ func (apiConfig *APIConfig) HandleCreateCategory(w http.ResponseWriter, r *http.
 
 	cat, err := models.CreateTransactionCategory(apiConfig.DB, params.Name, models.CategoryType(params.Type))
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, err.Error())
+		log.Println("failed to create transaction category:", err)
+		respondWithError(w, http.StatusBadRequest, "failed to create transaction category")
 		return
 	}
 

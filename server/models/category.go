@@ -51,7 +51,7 @@ func CreateTransactionCategory(database *mongo.Database, name string, catType Ca
 	return category, err
 }
 
-// Functions to retrieve a lists of TransactionCategory objects from the database
+// Functions to retrieve lists of TransactionCategory objects from the database
 func GetTransactionCategoryList(database *mongo.Database, filter bson.M) []TransactionCategory {
 	collection := getCategoryCollection(database)
 

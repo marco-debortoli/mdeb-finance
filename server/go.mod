@@ -2,7 +2,10 @@ module github.com/marco-debortoli/mdeb-ledger/server
 
 go 1.21.0
 
-require go.mongodb.org/mongo-driver v1.12.1
+require (
+	github.com/joho/godotenv v1.5.1
+	go.mongodb.org/mongo-driver v1.12.1
+)
 
 require github.com/ajg/form v1.5.1 // indirect
 

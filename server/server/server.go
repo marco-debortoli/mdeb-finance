@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/render"
 
 	"github.com/marco-debortoli/mdeb-ledger/server/api"
 )
@@ -19,10 +18,12 @@ func StartServer(apiConfig *api.APIConfig) {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logger)
 
-	r.Use(render.SetContentType(render.ContentTypeJSON))
-
 	v1Router := chi.NewRouter()
-	v1Router.Get("/health", apiConfig.HandlerHealth)
+	v1Router.Get("/health", apiConfig.HandleHealth)
+
+	v1Router.Post("/categories", apiConfig.HandleCreateCategory)
+	v1Router.Get("/categories", apiConfig.HandleListCategory)
+	v1Router.Get("/categories/{id}", apiConfig.HandleGetCategory)
 
 	r.Mount("/api/v1", v1Router)
 

@@ -60,7 +60,7 @@ func GetTransactionCategoryList(database *mongo.Database, filter bson.M) []Trans
 		panic(err)
 	}
 
-	var results []TransactionCategory
+	results := []TransactionCategory{}
 
 	if err = cursor.All(context.Background(), &results); err != nil {
 		panic(err)

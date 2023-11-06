@@ -2,6 +2,6 @@ package api
 
 import "net/http"
 
-func (apiConfig *APIConfig) HandlerHealth(w http.ResponseWriter, r *http.Request) {
+func (apiConfig *APIConfig) HandleHealth(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, struct{}{})
 }

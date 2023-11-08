@@ -26,6 +26,7 @@ func StartServer(apiConfig *api.APIConfig) {
 	v1Router.Get("/categories/{id}", apiConfig.HandleGetCategory)
 
 	v1Router.Post("/transactions", apiConfig.HandleCreateTransaction)
+	v1Router.Get("/transactions", apiConfig.HandleListTransaction)
 
 	r.Mount("/api/v1", v1Router)
 

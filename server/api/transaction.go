@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/marco-debortoli/mdeb-ledger/server/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -56,4 +57,42 @@ func (apiConfig *APIConfig) HandleCreateTransaction(w http.ResponseWriter, r *ht
 	}
 
 	respondWithJSON(w, http.StatusCreated, transaction)
+}
+
+// List Transactions
+func (apiConfig *APIConfig) HandleListTransaction(w http.ResponseWriter, r *http.Request) {
+	startDateParam := r.URL.Query().Get("start_date")
+	endDateParam := r.URL.Query().Get("end_date")
+
+	var err error
+	var startDateFilter time.Time
+	var endDateFilter time.Time
+
+	if startDateParam != "" {
+		startDateFilter, err = time.Parse(time.RFC3339, startDateParam)
+		if err != nil {
+			respondWithError(w, http.StatusBadRequest, "start_date URL parameter should be a valid ISO-8601 datetime string")
+			return
+		}
+	}
+
+	if endDateParam != "" {
+		endDateFilter, err = time.Parse(time.RFC3339, endDateParam)
+		if err != nil {
+			respondWithError(w, http.StatusBadRequest, "end_date URL parameter should be a valid ISO-8601 datetime string")
+			return
+		}
+	}
+
+	var transactionFilter *models.TransactionFilter
+
+	if !startDateFilter.IsZero() || !endDateFilter.IsZero() {
+		transactionFilter = &models.TransactionFilter{
+			StartDate: startDateFilter,
+			EndDate:   endDateFilter,
+		}
+	}
+
+	transactions := models.GetTransactionList(apiConfig.DB, transactionFilter)
+	respondWithJSON(w, http.StatusOK, transactions)
 }

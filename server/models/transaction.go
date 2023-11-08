@@ -2,7 +2,9 @@ package models
 
 import (
 	"context"
+	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -47,4 +49,43 @@ func CreateTransaction(
 	}
 
 	return transaction, err
+}
+
+// Get a List of transactions
+
+type TransactionFilter struct {
+	StartDate time.Time
+	EndDate   time.Time
+}
+
+func GetTransactionList(database *mongo.Database, filter *TransactionFilter) []Transaction {
+	collection := getTransactionCollection(database)
+
+	transactionFilter := bson.M{}
+
+	if filter != nil {
+		innerFilter := bson.M{}
+		if !filter.StartDate.IsZero() {
+			innerFilter["$gte"] = primitive.NewDateTimeFromTime(filter.StartDate)
+		}
+
+		if !filter.EndDate.IsZero() {
+			innerFilter["$lte"] = primitive.NewDateTimeFromTime(filter.EndDate)
+		}
+
+		transactionFilter["date"] = innerFilter
+	}
+
+	cursor, err := collection.Find(context.Background(), transactionFilter)
+	if err != nil {
+		panic(err)
+	}
+
+	results := []Transaction{}
+
+	if err = cursor.All(context.Background(), &results); err != nil {
+		panic(err)
+	}
+
+	return results
 }

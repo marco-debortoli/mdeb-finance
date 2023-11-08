@@ -2,10 +2,12 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/marco-debortoli/mdeb-ledger/server/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -95,4 +97,25 @@ func (apiConfig *APIConfig) HandleListTransaction(w http.ResponseWriter, r *http
 
 	transactions := models.GetTransactionList(apiConfig.DB, transactionFilter)
 	respondWithJSON(w, http.StatusOK, transactions)
+}
+
+// Delete Transaction
+func (apiConfig *APIConfig) HandleDeleteTransaction(w http.ResponseWriter, r *http.Request) {
+	trId, err := primitive.ObjectIDFromHex(chi.URLParam(r, "id"))
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid UUID format")
+		return
+	}
+
+	err = models.DeleteTransaction(apiConfig.DB, trId)
+	if err != nil {
+		respondWithError(
+			w,
+			http.StatusBadRequest,
+			fmt.Sprintf("Could not delete transaction: %v", err),
+		)
+		return
+	}
+
+	respondWithJSON(w, http.StatusNoContent, nil)
 }

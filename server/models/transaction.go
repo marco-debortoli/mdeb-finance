@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -88,4 +89,19 @@ func GetTransactionList(database *mongo.Database, filter *TransactionFilter) []T
 	}
 
 	return results
+}
+
+// Delete a Transaction by _id
+func DeleteTransaction(database *mongo.Database, id primitive.ObjectID) error {
+	collection := getTransactionCollection(database)
+	result, err := collection.DeleteOne(context.Background(), bson.M{"_id": id})
+	if err != nil {
+		return err
+	}
+
+	if result.DeletedCount == 0 {
+		return errors.New("Transaction with provided id does not exist")
+	}
+
+	return nil
 }

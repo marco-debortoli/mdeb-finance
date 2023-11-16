@@ -3,7 +3,6 @@ package models
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -86,41 +85,89 @@ func GetAccount(database *mongo.Database, id primitive.ObjectID) (Account, error
 	return found, err
 }
 
-// Set Account current value
-func SetAccountCurrentValue(
+// Set Account value and current value
+func SetAccountValue(
 	database *mongo.Database,
 	account *Account,
 	value float64,
-	vTime time.Time,
+	vTime primitive.DateTime,
 ) error {
 	collection := getAccountCollection(database)
 
 	newValue := AccountValue{
 		Value: value,
-		Date:  primitive.NewDateTimeFromTime(vTime),
+		Date:  vTime,
 	}
 
-	_, err := collection.UpdateOne(
-		context.Background(),
-		bson.M{"_id": account.ID},
-		bson.M{
-			"$set": bson.M{
-				"current_value": newValue,
-			},
-			"$push": bson.M{
-				"values": newValue,
-			},
-		},
-	)
+	// Need to figure out whether we are updating an existing value or adding a new one
+	// Check and see if there is an entry for this date already
+	var existingValue *AccountValue
 
-	if err != nil {
-		fmt.Printf("Error setting account current value: %v", err)
-		return err
+	for _, v := range account.Values {
+		if v.Date == vTime {
+			existingValue = v
+		}
 	}
 
-	// Set our provided account current value
-	account.CurrentValue = &newValue
-	account.Values = append(account.Values, &newValue)
+	if existingValue != nil {
+		// We have an existing value - so let's update that one
+		_, err := collection.UpdateOne(
+			context.Background(),
+			bson.M{"values.date": vTime, "_id": account.ID},
+			bson.M{
+				"$set": bson.M{
+					"values.$.value": value,
+				},
+			},
+		)
+
+		if err != nil {
+			fmt.Printf("Error setting nested account value for date: %v", vTime)
+			return err
+		}
+
+		// This will update our passed in Account
+		existingValue.Value = value
+	} else {
+		// We have a new value that we are adding - so let's add it
+		_, err := collection.UpdateOne(
+			context.Background(),
+			bson.M{"_id": account.ID},
+			bson.M{
+				"$push": bson.M{
+					"values": newValue,
+				},
+			},
+		)
+
+		if err != nil {
+			fmt.Printf("Error adding new nested account value for date: %v", vTime)
+			return err
+		}
+
+		// Update the list of values for our passed in Account
+		account.Values = append(account.Values, &newValue)
+	}
+
+	// Now we need to update the current value if it is the most recent one
+	if account.CurrentValue == nil || vTime >= account.CurrentValue.Date {
+		_, err := collection.UpdateOne(
+			context.Background(),
+			bson.M{"_id": account.ID},
+			bson.M{
+				"$set": bson.M{
+					"current_value": newValue,
+				},
+			},
+		)
+
+		if err != nil {
+			fmt.Printf("Error setting current date: %v", err)
+			return err
+		}
+
+		account.CurrentValue = &newValue
+	}
 
 	return nil
 }

@@ -35,7 +35,7 @@ func StartServer(apiConfig *api.APIConfig) {
 
 	// Accounts
 	v1Router.Post("/accounts", apiConfig.HandleCreateAccount)
-	v1Router.Post("/accounts/{id}/set_current_value", apiConfig.HandleSetAccountCurrentValue)
+	v1Router.Post("/accounts/{id}/set_value", apiConfig.HandleSetAccountValue)
 
 	r.Mount("/api/v1", v1Router)
 

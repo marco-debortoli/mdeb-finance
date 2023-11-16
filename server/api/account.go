@@ -61,7 +61,7 @@ func (apiConfig *APIConfig) HandleCreateAccount(w http.ResponseWriter, r *http.R
 }
 
 // Account actions
-func (apiConfig *APIConfig) HandleSetAccountCurrentValue(w http.ResponseWriter, r *http.Request) {
+func (apiConfig *APIConfig) HandleSetAccountValue(w http.ResponseWriter, r *http.Request) {
 	// Get the ID from the URL
 	accountId, err := primitive.ObjectIDFromHex(chi.URLParam(r, "id"))
 	if err != nil {
@@ -84,7 +84,8 @@ func (apiConfig *APIConfig) HandleSetAccountCurrentValue(w http.ResponseWriter, 
 
 	// Decode the parameters
 	type parameters struct {
-		Value float64 `json:"value"`
+		Value float64             `json:"value"`
+		Date  *primitive.DateTime `json:"date"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -95,13 +96,27 @@ func (apiConfig *APIConfig) HandleSetAccountCurrentValue(w http.ResponseWriter, 
 		return
 	}
 
+	// TODO - Here we should add validation to Date to ensure that it is the beginning of a month
+	// This would limit it to one account value per month
+	// For now we will just assume that the frontend is providing the proper date
+
+	// Date must be provided
+	if params.Date == nil {
+		respondWithError(
+			w,
+			http.StatusBadRequest,
+			"Date must be provided",
+		)
+		return
+	}
+
 	// Now update the account value
-	err = models.SetAccountCurrentValue(apiConfig.DB, &account, params.Value, time.Now())
+	err = models.SetAccountValue(apiConfig.DB, &account, params.Value, *params.Date)
 
 	if err != nil {
 		respondWithError(
 			w,
-			http.StatusBadRequest,
+			http.StatusInternalServerError,
 			fmt.Sprintf("Failed to set account value: %v", err),
 		)
 		return

@@ -35,6 +35,7 @@ func StartServer(apiConfig *api.APIConfig) {
 
 	// Accounts
 	v1Router.Post("/accounts", apiConfig.HandleCreateAccount)
+	v1Router.Get("/accounts", apiConfig.HandleListAccount)
 	v1Router.Post("/accounts/{id}/set_value", apiConfig.HandleSetAccountValue)
 
 	r.Mount("/api/v1", v1Router)

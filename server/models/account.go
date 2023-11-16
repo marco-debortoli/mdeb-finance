@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -172,6 +173,36 @@ func SetAccountValue(
 	return nil
 }
 
-// Update old account value
+// Listing
+func GetAccountList(database *mongo.Database, activeDate *time.Time) ([]Account, error) {
+	collection := getAccountCollection(database)
 
-// Mark inactive
+	accountFilter := bson.M{}
+
+	if activeDate != nil {
+		accountFilter = bson.M{
+			"$and": bson.A{
+				bson.M{"start_date": bson.M{"$lte": primitive.NewDateTimeFromTime(*activeDate)}},
+				bson.M{
+					"$or": bson.A{
+						bson.M{"end_date": bson.M{"$gte": primitive.NewDateTimeFromTime(*activeDate)}},
+						bson.M{"end_date": nil},
+					},
+				},
+			},
+		}
+	}
+
+	cursor, err := collection.Find(context.Background(), accountFilter)
+	if err != nil {
+		return nil, err
+	}
+
+	results := []Account{}
+
+	if err = cursor.All(context.Background(), &results); err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}

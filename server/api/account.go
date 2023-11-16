@@ -124,3 +124,32 @@ func (apiConfig *APIConfig) HandleSetAccountValue(w http.ResponseWriter, r *http
 
 	respondWithJSON(w, http.StatusOK, account)
 }
+
+// Listing accounts
+func (apiConfig *APIConfig) HandleListAccount(w http.ResponseWriter, r *http.Request) {
+	dateParam := r.URL.Query().Get("date")
+
+	var err error
+	var dateFilter *time.Time
+
+	if dateParam != "" {
+		parsedDate, err := time.Parse(time.RFC3339, dateParam)
+		if err != nil {
+			respondWithError(w, http.StatusBadRequest, "date URL parameter should be a valid ISO-8601 datetime string")
+			return
+		}
+
+		dateFilter = &parsedDate
+	}
+
+	accounts, err := models.GetAccountList(apiConfig.DB, dateFilter)
+
+	if err != nil {
+		respondWithError(
+			w, http.StatusInternalServerError, "Failed to retrieve list of accounts",
+		)
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, accounts)
+}

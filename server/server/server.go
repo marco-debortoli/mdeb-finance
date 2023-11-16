@@ -19,16 +19,23 @@ func StartServer(apiConfig *api.APIConfig) {
 	r.Use(middleware.Logger)
 
 	v1Router := chi.NewRouter()
+	// Server Maintenance
 	v1Router.Get("/health", apiConfig.HandleHealth)
 
+	// Categories
 	v1Router.Post("/categories", apiConfig.HandleCreateCategory)
 	v1Router.Get("/categories", apiConfig.HandleListCategory)
 	v1Router.Get("/categories/{id}", apiConfig.HandleGetCategory)
 
+	// Transactions
 	v1Router.Post("/transactions", apiConfig.HandleCreateTransaction)
 	v1Router.Get("/transactions", apiConfig.HandleListTransaction)
 	v1Router.Delete("/transactions/{id}", apiConfig.HandleDeleteTransaction)
 	v1Router.Put("/transactions/{id}", apiConfig.HandleUpdateTransaction)
+
+	// Accounts
+	v1Router.Post("/accounts", apiConfig.HandleCreateAccount)
+	v1Router.Post("/accounts/{id}/set_current_value", apiConfig.HandleSetAccountCurrentValue)
 
 	r.Mount("/api/v1", v1Router)
 

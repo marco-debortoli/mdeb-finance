@@ -28,6 +28,7 @@ func StartServer(apiConfig *api.APIConfig) {
 	v1Router.Post("/transactions", apiConfig.HandleCreateTransaction)
 	v1Router.Get("/transactions", apiConfig.HandleListTransaction)
 	v1Router.Delete("/transactions/{id}", apiConfig.HandleDeleteTransaction)
+	v1Router.Put("/transactions/{id}", apiConfig.HandleUpdateTransaction)
 
 	r.Mount("/api/v1", v1Router)
 

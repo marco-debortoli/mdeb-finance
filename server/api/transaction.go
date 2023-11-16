@@ -119,3 +119,84 @@ func (apiConfig *APIConfig) HandleDeleteTransaction(w http.ResponseWriter, r *ht
 
 	respondWithJSON(w, http.StatusNoContent, nil)
 }
+
+// Updating Transactions
+func (apiConfig *APIConfig) HandleUpdateTransaction(w http.ResponseWriter, r *http.Request) {
+	// Get the Transaction from the provided ID
+	transactionId, err := primitive.ObjectIDFromHex(chi.URLParam(r, "id"))
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid UUID format")
+		return
+	}
+
+	// Now get the Transaction from the database - if not found then return 404
+	transaction, err := models.GetTransaction(apiConfig.DB, transactionId)
+
+	if err != nil {
+		respondWithError(
+			w,
+			http.StatusNotFound,
+			fmt.Sprintf("Could not find transaction with ID: %v", transactionId),
+		)
+
+		return
+	}
+
+	// Now we can decode the body - since this is a PUT request we will assume
+	// that they can replace any field except the ID
+	type parameters struct {
+		Name     string             `json:"name"`
+		Category primitive.ObjectID `json:"category"`
+		Date     primitive.DateTime `json:"date"`
+		Amount   float64            `json:"amount"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	params := parameters{}
+	err = decoder.Decode(&params)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid JSON body")
+		return
+	}
+
+	// Need to validate that the category is a valid category
+	newCategory, err := models.GetTransactionCategory(apiConfig.DB, params.Category)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "provided category does not exist")
+		return
+	}
+
+	// Need to validate that all fields are provided and that the provided values are correct
+	// (date, name and amount)
+	if params.Date.Time().Unix() == 0 {
+		respondWithError(w, http.StatusBadRequest, "date must be provided")
+		return
+	}
+
+	if params.Name == "" {
+		respondWithError(w, http.StatusBadRequest, "name must be provided")
+		return
+	}
+
+	if params.Amount <= 0.0 {
+		respondWithError(w, http.StatusBadRequest, "amount must be provided and greater than zero")
+		return
+	}
+
+	err = models.UpdateTransaction(
+		apiConfig.DB,
+		&transaction,
+		params.Name,
+		params.Date,
+		params.Amount,
+		newCategory,
+	)
+	if err != nil {
+		log.Println("Failed to update transaction:", err)
+		respondWithError(w, http.StatusBadRequest, "failed to update transaction")
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, transaction)
+
+}

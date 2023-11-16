@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,9 +15,14 @@ import (
 const collectionName = "transactions"
 
 // This is the transaction struct which represents the transaction type in the database
+type NestedCategory struct {
+	Name string             `bson:"name" json:"name"`
+	ID   primitive.ObjectID `bson:"_id" json:"_id"`
+}
+
 type Transaction struct {
 	Name     string             `bson:"name" json:"name"`
-	Category string             `bson:"category" json:"category"`
+	Category NestedCategory     `bson:"category" json:"category"`
 	Date     primitive.DateTime `bson:"date" json:"date"`
 	ID       primitive.ObjectID `bson:"_id,omitempty" json:"_id"`
 	Amount   float64            `bson:"amount" json:"amount"`
@@ -38,10 +44,13 @@ func CreateTransaction(
 	collection := getTransactionCollection(database)
 
 	transaction := Transaction{
-		Category: category.Name,
-		Date:     date,
-		Amount:   amount,
-		Name:     name,
+		Category: NestedCategory{
+			Name: category.Name,
+			ID:   category.ID,
+		},
+		Date:   date,
+		Amount: amount,
+		Name:   name,
 	}
 
 	res, err := collection.InsertOne(context.Background(), transaction)
@@ -102,6 +111,64 @@ func DeleteTransaction(database *mongo.Database, id primitive.ObjectID) error {
 	if result.DeletedCount == 0 {
 		return errors.New("Transaction with provided id does not exist")
 	}
+
+	return nil
+}
+
+// Retrieve a single Transaction by _id
+func GetTransaction(database *mongo.Database, id primitive.ObjectID) (Transaction, error) {
+	collection := getTransactionCollection(database)
+
+	result := collection.FindOne(context.Background(), bson.M{"_id": id})
+
+	var found Transaction
+	err := result.Decode(&found)
+
+	return found, err
+}
+
+// Update transaction (replace)
+func UpdateTransaction(
+	database *mongo.Database,
+	transaction *Transaction,
+	name string,
+	date primitive.DateTime,
+	amount float64,
+	category TransactionCategory,
+) error {
+	collection := getTransactionCollection(database)
+
+	update := bson.M{
+		"$set": bson.M{
+			"name":   name,
+			"date":   date,
+			"amount": amount,
+			"category": bson.M{
+				"name": category.Name,
+				"_id":  category.ID,
+			},
+		},
+	}
+
+	_, err := collection.UpdateOne(
+		context.Background(),
+		bson.M{"_id": transaction.ID},
+		update,
+	)
+
+	if err != nil {
+		fmt.Printf("Failed to update transaction: %v", err)
+		return err
+	}
+
+	// We should now update our transaction
+	transaction.Name = name
+	transaction.Date = date
+	transaction.Category = NestedCategory{
+		Name: category.Name,
+		ID:   category.ID,
+	}
+	transaction.Amount = amount
 
 	return nil
 }

@@ -21,19 +21,19 @@ const displayDate = computed(() => {
     <i
       class="ti text-2xl mr-2 hover:cursor-pointer"
       :class="{'ti-arrow-big-left': !leftHover, 'ti-arrow-big-left-filled': leftHover}"
-      v-on:mouseenter="leftHover=true"
-      v-on:mouseleave="leftHover=false"
-      v-on:click="$emit('dec')"
+      v-on:mouseenter="() => leftHover=true"
+      v-on:mouseleave="() => leftHover=false"
+      v-on:click="() => $emit('dec')"
     ></i>
-    <div class="text-3xl uppercase font-bold">
+    <h1 class="text-3xl uppercase font-bold">
       {{ displayDate }}
-    </div>
+    </h1>
     <i
       class="ti text-2xl ml-2 hover:cursor-pointer"
       :class="{'ti-arrow-big-right': !rightHover, 'ti-arrow-big-right-filled': rightHover}"
-      v-on:mouseenter="rightHover=true"
-      v-on:mouseleave="rightHover=false"
-      v-on:click="$emit('inc')"
+      v-on:mouseenter="() => rightHover=true"
+      v-on:mouseleave="() => rightHover=false"
+      v-on:click="() => $emit('inc')"
     ></i>
   </div>
 </template>

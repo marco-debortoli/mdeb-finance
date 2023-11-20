@@ -69,10 +69,11 @@ onMounted(() => {
     </header>
 
     <section class="grid grid-cols-1 xl:grid-cols-4 h-screen gap-2">
-      <div class="xl:col-span-3 border-4 rounded-md border-black/30">
+      <div class="xl:col-span-3 border rounded-md border-black/30">
         <TransactionsList
           :transactions="transactions"
           :loading="transactionLoading"
+          :date="currentDate"
         />
       </div>
       <div class="xl:col-span-1 border rounded-md border-black/30">ACCOUNTS</div>

@@ -3,16 +3,18 @@ import { computed, ref } from 'vue';
 
 const leftHover = ref(false);
 const rightHover = ref(false);
-defineEmits(['dec', 'inc'])
+
+defineEmits(['dec', 'inc']);
+
 const props = defineProps<{
   date: Date
-}>()
+}>();
 
 const displayDate = computed(() => {
   const monthName = Intl.DateTimeFormat('en', {month: 'long'}).format(props.date);
   const year = props.date.getFullYear();
   return monthName + " " + year;
-})
+});
 
 </script>
 

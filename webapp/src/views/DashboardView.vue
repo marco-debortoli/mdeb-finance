@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import MonthNavigation from '@/components/MonthNavigation.vue';
 import { ref, onMounted } from 'vue';
+import type { Transaction } from '@/types/transaction';
+import TransactionsList from '@/components/TransactionsList.vue';
 
 const currentDate = ref(new Date());
 
@@ -24,6 +26,32 @@ onMounted(() => {
   );
 });
 
+// Transactions
+
+const transactions = ref<Transaction[]>([]);
+const transactionError = ref(false);
+const transactionLoading = ref(true);
+
+async function fetchTransactions() {
+  transactionLoading.value = true;
+
+  const response = await fetch("http://localhost:8080/api/v1/transactions");
+
+  transactionLoading.value = false;
+
+  if (response.status != 200) {
+    console.log("Failed to fetch transactions")
+    transactionError.value = true;
+  } else {
+    transactions.value = await response.json();
+  }
+}
+
+// On page mount
+onMounted(() => {
+  fetchTransactions();
+})
+
 </script>
 
 <template>
@@ -41,7 +69,12 @@ onMounted(() => {
     </header>
 
     <section class="grid grid-cols-1 xl:grid-cols-4 h-screen gap-2">
-      <div class="xl:col-span-3 border rounded-md border-black/30">{{ currentDate }}</div>
+      <div class="xl:col-span-3 border-4 rounded-md border-black/30">
+        <TransactionsList
+          :transactions="transactions"
+          :loading="transactionLoading"
+        />
+      </div>
       <div class="xl:col-span-1 border rounded-md border-black/30">ACCOUNTS</div>
     </section>
   </div>

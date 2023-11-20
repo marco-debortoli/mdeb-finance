@@ -3,6 +3,7 @@ module github.com/marco-debortoli/mdeb-ledger/server
 go 1.21.0
 
 require (
+	github.com/go-chi/cors v1.2.1
 	github.com/joho/godotenv v1.5.1
 	go.mongodb.org/mongo-driver v1.12.1
 )

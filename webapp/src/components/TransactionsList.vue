@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import TransactionModal from '@/components/TransactionModal.vue';
 import type { Transaction } from '@/types/transaction';
 
 const props = defineProps<{
@@ -7,6 +8,16 @@ const props = defineProps<{
   loading: boolean
   date: Date
 }>();
+
+const sortedTransactions = computed(() => {
+  const sorted = [...props.transactions].sort((a, b) => {
+    if (a.date < b.date) {
+      return -1;
+    }
+    return 1;
+  });
+  return sorted;
+});
 
 const startDate = computed(() => {
   const options: Intl.DateTimeFormatOptions = {
@@ -54,24 +65,33 @@ function formatCurrency(amount: number) {
   return formatter.format(amount);
 }
 
+// Add and edit
+const openModal = ref(false);
+const editModal = ref(false);
+
 </script>
 
 <template>
-  <div class="block py-6 px-10 w-full">
+  <div class="block py-6 px-10 w-full h-full relative">
     <div class="flex justify-between">
       <div class="block">
-        <h2 class="text-2xl font-bold uppercase">Transactions</h2>
-        <small class="text-xs">Recorded financial transactions from {{ startDate }} to {{ endDate }}</small>
+        <h2 class="text-2xl font-bold uppercase"># Transactions</h2>
+        <small class="text-xs hidden xl:block">
+          > Recorded financial transactions from {{ startDate }} to {{ endDate }}
+        </small>
       </div>
       <div class="block">
-        <button class="border px-4 py-1 rounded-lg border-black/50 align-middle">
+        <button
+          class="border px-4 py-1 rounded-lg border-black/50 hover:border-black align-middle"
+          @click="() => { editModal = false; openModal = true }"
+        >
           <i class="ti ti-plus hover:cursor-pointer"/>
           Add
         </button>
       </div>
     </div>
 
-    <table class="table-fixed w-full mt-6" v-if="!loading">
+    <table class="table-auto xl:table-fixed w-full mt-6" v-if="!loading">
       <thead class="uppercase border-b-2 border-black font-bold text-left text-lg">
         <tr>
           <th>Date</th>
@@ -82,13 +102,18 @@ function formatCurrency(amount: number) {
         </tr>
       </thead>
       <tbody class="text-sm">
-        <template v-for="transaction in transactions" v-bind:key="transaction._id">
+        <template v-for="transaction in sortedTransactions" v-bind:key="transaction._id">
           <tr class="border-b border-black/25">
             <td class="font-semibold">{{ formatTransactionDate(transaction.date) }}</td>
             <td>{{ transaction.category.name }}</td>
             <td>{{ formatCurrency(transaction.amount) }}</td>
             <td>{{ transaction.name }}</td>
-            <td class="text-center"><small>Edit</small></td>
+            <td
+              class="text-center hover:cursor-pointer hover:underline"
+              @click="() => { editModal = true; openModal = true }"
+            >
+              <small>Edit</small>
+            </td>
           </tr>
         </template>
       </tbody>
@@ -96,6 +121,14 @@ function formatCurrency(amount: number) {
 
     <div v-else>
       LOADING
+    </div>
+
+    <!-- Add and Edit Modal -->
+    <div v-if="openModal">
+      <TransactionModal
+        v-on:cancel="() => openModal = false"
+        :edit="editModal"
+      />
     </div>
 
   </div>

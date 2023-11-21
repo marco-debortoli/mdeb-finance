@@ -2,6 +2,7 @@
 import MonthNavigation from '@/components/MonthNavigation.vue';
 import { ref, onMounted } from 'vue';
 import type { Transaction } from '@/types/transaction';
+import type { Category } from '@/types/category';
 import TransactionsList from '@/components/TransactionsList.vue';
 
 const currentDate = ref(new Date());
@@ -12,12 +13,16 @@ function decDate() {
   const copyDate = new Date(currentDate.value);
   copyDate.setMonth(copyDate.getMonth() - 1);
   currentDate.value = copyDate;
+
+  fetchTransactions();
 }
 
 function incDate() {
   const copyDate = new Date(currentDate.value);
   copyDate.setMonth(copyDate.getMonth() + 1);
   currentDate.value = copyDate;
+
+  fetchTransactions();
 }
 
 onMounted(() => {
@@ -47,9 +52,29 @@ async function fetchTransactions() {
   }
 }
 
+// Categories
+
+const categories = ref<Category[]>([]);
+const categoryLoading = ref(true);
+
+async function fetchCategories() {
+  categoryLoading.value = true;
+
+  const response = await fetch("http://localhost:8080/api/v1/categories");
+
+  categoryLoading.value = false;
+
+  if (response.status != 200) {
+    console.log("Failed to fetch categories")
+  } else {
+    categories.value = await response.json();
+  }
+}
+
 // On page mount
 onMounted(() => {
   fetchTransactions();
+  fetchCategories();
 })
 
 </script>
@@ -72,6 +97,7 @@ onMounted(() => {
       <div class="xl:col-span-3 border rounded-md border-black/30">
         <TransactionsList
           :transactions="transactions"
+          :categories="categories"
           :loading="transactionLoading"
           :date="currentDate"
         />

@@ -2,9 +2,11 @@
 import { computed, ref } from 'vue';
 import TransactionModal from '@/components/TransactionModal.vue';
 import type { Transaction } from '@/types/transaction';
+import type { Category } from '@/types/category';
 
 const props = defineProps<{
   transactions: Transaction[]
+  categories: Category[]
   loading: boolean
   date: Date
 }>();
@@ -127,7 +129,10 @@ const editModal = ref(false);
     <div v-if="openModal">
       <TransactionModal
         v-on:cancel="() => openModal = false"
+        v-on:create="() => openModal = false"
+        :categories="categories"
         :edit="editModal"
+        :start-date="date"
       />
     </div>
 

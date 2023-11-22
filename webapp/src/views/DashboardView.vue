@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import MonthNavigation from '@/components/MonthNavigation.vue';
 import TransactionsList from '@/components/TransactionsList.vue';
+import CategoryTotals from '@/components/CategoryTotals.vue';
 import NetProfit from '@/components/NetProfit.vue';
+import AccountList from '@/components/AccountList.vue';
+
 import { ref, onMounted } from 'vue';
 import { useTransactionStore } from '@/stores/transaction';
 import { useCategoryStore } from '@/stores/category';
-import CategoryTotals from '@/components/CategoryTotals.vue';
+import { useAccountStore } from '@/stores/account';
 
 const currentDate = ref(new Date());
 
@@ -27,13 +30,9 @@ function incDate() {
   transactionStore.retrieve(currentDate.value);
 }
 
-// Transactions
-
 const transactionStore = useTransactionStore();
-
-// Categories
-
 const categoryStore = useCategoryStore();
+const accountStore = useAccountStore();
 
 // On page mount
 onMounted(() => {
@@ -42,6 +41,7 @@ onMounted(() => {
   );
 
   transactionStore.retrieve(currentDate.value);
+  accountStore.retrieve(currentDate.value);
   categoryStore.retrieve();
 })
 
@@ -80,7 +80,11 @@ onMounted(() => {
           />
         </div>
         <div class="flex flex-col gap-2 xl:w-1/4">
-          <div class="flex h-1/2 border rounded-md border-black/30 justify-center items-center">ACCOUNTS</div>
+          <div class="flex h-1/2">
+            <AccountList
+              :date="currentDate"
+            />
+          </div>
           <div class="flex h-1/2">
             <CategoryTotals
               :date="currentDate"

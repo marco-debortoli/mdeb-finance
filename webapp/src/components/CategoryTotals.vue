@@ -62,6 +62,5 @@ function transactionTotal(catId: string) {
         </tbody>
       </table>
     </div>
-
   </div>
 </template>

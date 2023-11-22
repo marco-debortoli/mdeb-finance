@@ -35,7 +35,7 @@ export const useCategoryStore = defineStore(
         this.loading = false;
 
         if (response.status != 200) {
-          console.log("Failed to fetch transactions")
+          console.log("Failed to fetch categories")
           return response;
         } else {
           this.categories = await response.json();

@@ -40,7 +40,7 @@ const color = computed(() => {
 
     <div class="flex justify-center flex-grow">
       <span class="font-black" :class="color">
-        {{ formatCurrency(monthProfit) }}
+        {{ formatCurrency(monthProfit, true) }}
       </span>
     </div>
   </div>

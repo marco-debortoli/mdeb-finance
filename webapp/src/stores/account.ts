@@ -40,6 +40,30 @@ export const useAccountStore = defineStore(
           this.accounts = await response.json();
           return response;
         }
+      },
+
+      async addValue(id: string, date: Date, amount: number) {
+        const url = `http://localhost:8080/api/v1/accounts/${id}/set_value`;
+
+        const payload = {
+            value: amount,
+            date: dayjs(date).startOf('month').local().format() 
+        }
+
+        const response = await fetch(
+          url,
+          {
+          method: "post",
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+          },
+
+          body: JSON.stringify(payload)
+        });
+
+        return response;
+
       }
     },
   }

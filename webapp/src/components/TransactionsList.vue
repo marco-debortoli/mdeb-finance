@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import TransactionModal from '@/components/TransactionModal.vue';
 import { useTransactionStore } from '@/stores/transaction';
+import { formatCurrency } from '@/tools/currency';
 import type { Transaction } from '@/types/transaction';
 
 const props = defineProps<{
@@ -42,18 +43,6 @@ function formatTransactionDate(isoDate: string) {
     day: 'numeric'
   };
   return formattedDate.toLocaleDateString("en-US", options);
-}
-
-function formatCurrency(amount: number) {
-  const formatter = new Intl.NumberFormat(
-    'en-US', {
-      style: 'currency',
-      currency: 'CAD',
-      currencyDisplay: 'narrowSymbol'
-    }
-  );
-
-  return formatter.format(amount);
 }
 
 // Add and edit
@@ -102,7 +91,7 @@ function closeTransactionModal(refresh: boolean = false) {
         </thead>
         <tbody class="text-sm">
           <template v-for="transaction in transactionStore.sortedTransactions" v-bind:key="transaction._id">
-            <tr class="border-b border-black/25">
+            <tr class="border-b border-black/30 hover:bg-black/30">
               <td class="font-semibold">{{ formatTransactionDate(transaction.date) }}</td>
               <td>{{ transaction.category.name }}</td>
               <td>{{ formatCurrency(transaction.amount) }}</td>

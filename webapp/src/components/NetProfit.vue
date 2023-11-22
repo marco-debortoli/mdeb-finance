@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useTransactionStore } from '@/stores/transaction';
+import { formatCurrency } from '@/tools/currency';
 import { computed } from 'vue'; 
 
 
@@ -29,18 +30,6 @@ const color = computed(() => {
   return 'text-red-700';
 })
 
-function moneyFormat(amount: number) {
-  const formatter = new Intl.NumberFormat(
-    'en-US', {
-      style: 'currency',
-      currency: 'CAD',
-      currencyDisplay: 'narrowSymbol'
-    }
-  );
-
-  return formatter.format(amount);
-}
-
 </script>
 
 <template>
@@ -51,7 +40,7 @@ function moneyFormat(amount: number) {
 
     <div class="flex justify-center flex-grow">
       <span class="font-black" :class="color">
-        {{ moneyFormat(monthProfit) }}
+        {{ formatCurrency(monthProfit) }}
       </span>
     </div>
   </div>

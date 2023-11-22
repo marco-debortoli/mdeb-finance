@@ -10,7 +10,20 @@ export const useCategoryStore = defineStore(
         loading: false
       }
     ),
-    getters: {},
+    getters: {
+      debitCategories(state) {
+        const filtered = state.categories.filter((cat) => {
+          return cat.type == "debit";
+        });
+        return filtered;
+      },
+      creditCategories(state) {
+        const filtered = state.categories.filter((cat) => {
+          return cat.type == "credit";
+        });
+        return filtered;
+      },
+    },
     actions: {
       async retrieve() {
         this.loading = true;

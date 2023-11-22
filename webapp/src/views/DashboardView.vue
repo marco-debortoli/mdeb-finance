@@ -5,6 +5,7 @@ import NetProfit from '@/components/NetProfit.vue';
 import { ref, onMounted } from 'vue';
 import { useTransactionStore } from '@/stores/transaction';
 import { useCategoryStore } from '@/stores/category';
+import CategoryTotals from '@/components/CategoryTotals.vue';
 
 const currentDate = ref(new Date());
 
@@ -80,7 +81,11 @@ onMounted(() => {
         </div>
         <div class="flex flex-col gap-2 xl:w-1/4">
           <div class="flex h-1/2 border rounded-md border-black/30 justify-center items-center">ACCOUNTS</div>
-          <div class="flex h-1/2 border rounded-md border-black/30 justify-center items-center">CATEGORIES</div>
+          <div class="flex h-1/2">
+            <CategoryTotals
+              :date="currentDate"
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useTransactionStore } from '@/stores/transaction';
 import { formatCurrency } from '@/tools/currency';
 import { computed } from 'vue'; 
 
@@ -7,25 +6,13 @@ defineProps<{
   date: Date
 }>();
 
-const transactionStore = useTransactionStore();
-
-const monthProfit = computed(() => {
-  let profit = 0;
-
-  transactionStore.transactions.forEach((tr) => {
-    if (tr.category.type == "debit") {
-      profit += tr.amount;
-    } else {
-      profit -= tr.amount;
-    }
-  });
-
-  return profit
+const netWorth = computed(() => {
+  return 0;
 });
 
 const color = computed(() => {
-  if (monthProfit.value > 0) return 'text-green-700';
-  if (monthProfit.value == 0) return 'text-current';
+  if (netWorth.value > 0) return 'text-green-700';
+  if (netWorth.value == 0) return 'text-current';
   return 'text-red-700';
 })
 
@@ -34,12 +21,12 @@ const color = computed(() => {
 <template>
   <div class="flex flex-grow items-center border rounded-md border-black/30">
     <div class="flex justify-center px-4 border-r border-black/30">
-      MONTH
+      NET WORTH
     </div>
 
     <div class="flex justify-center flex-grow">
       <span class="font-black" :class="color">
-        {{ formatCurrency(monthProfit, true) }}
+        {{ formatCurrency(netWorth, true) }}
       </span>
     </div>
   </div>

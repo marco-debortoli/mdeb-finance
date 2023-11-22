@@ -19,7 +19,6 @@ const activeAccounts = computed(() => {
     if (!acc.end_date) return true;
 
     const accEndDate = dayjs(acc.end_date).startOf('month');
-    console.log(accEndDate, currentDate);
     return accEndDate.isSame(currentDate) || accEndDate.isAfter(currentDate);
   });
 });

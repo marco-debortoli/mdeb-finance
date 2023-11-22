@@ -132,13 +132,10 @@ func UpdateTransaction(
 
 	update := bson.M{
 		"$set": bson.M{
-			"name":   name,
-			"date":   date,
-			"amount": amount,
-			"category": bson.M{
-				"name": category.Name,
-				"_id":  category.ID,
-			},
+			"name":     name,
+			"date":     date,
+			"amount":   amount,
+			"category": category,
 		},
 	}
 

@@ -4,6 +4,7 @@ import TransactionsList from '@/components/TransactionsList.vue';
 import CategoryTotals from '@/components/CategoryTotals.vue';
 import NetProfit from '@/components/NetProfit.vue';
 import AccountList from '@/components/AccountList.vue';
+import NetWorth from '@/components/NetWorth.vue';
 
 import { ref, onMounted } from 'vue';
 import { useTransactionStore } from '@/stores/transaction';
@@ -65,8 +66,10 @@ onMounted(() => {
             :date="currentDate"
           />
         </div>
-        <div class="flex xl:w-1/4 border rounded-md border-black/30 justify-center items-center">
-          NET WORTH
+        <div class="flex xl:w-1/4">
+          <NetWorth
+            :date="currentDate"
+          />
         </div>        
       </div>
     </div>

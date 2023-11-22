@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useCategoryStore } from '@/stores/category';
 import { computed, ref } from 'vue';
+import { useTransactionStore } from '@/stores/transaction';
 
 const emit = defineEmits(
   ['cancel', 'create']
@@ -11,14 +12,17 @@ const props = defineProps<{
   startDate: Date
 }>();
 
+const adding = ref(false);
+
 const categoryStore = useCategoryStore();
+const transactionStore = useTransactionStore();
 
 let createForm = ref(
   {
     date: new Date(props.startDate).toISOString().split('T')[0],
-    category: null,
+    category: "",
     amount: 0.00,
-    name: null
+    name: ""
   }
 );
 
@@ -31,27 +35,17 @@ const maxDate = computed(() => {
 });
 
 function addTransaction() {
-  // Create Form validation
-
-  // Modify the data slightly
-  let createData = {...createForm.value};
-  createData.date = `${createData.date}T00:00:00-00:00`;
-
-  fetch(
-    "http://localhost:8080/api/v1/transactions",
-    {
-    method: "post",
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-
-    //make sure to serialize your JSON body
-    body: JSON.stringify(createData)
-  })
-  .then(() => { 
+  adding.value = true;
+  
+  transactionStore.create(
+    createForm.value.date,
+    createForm.value.amount,
+    createForm.value.category,
+    createForm.value.name
+  ).then(() => {
+    adding.value = false;
     emit('create');
-  });
+  })
 }
 
 </script>
@@ -150,6 +144,7 @@ function addTransaction() {
           data-dialog-close="true"
           class="uppercase border px-4 py-1 rounded-lg border-black/50 hover:border-black align-middle"
           @click="() => addTransaction()"
+          :disabled="adding"
         >
           {{ props.edit ? 'Update' : 'Create' }}
         </button>

@@ -81,7 +81,7 @@ const editModal = ref(false);
       </div>
     </div>
 
-    <table class="table-auto xl:table-fixed w-full mt-6" v-if="!transactionStore.loading">
+    <table class="table-auto xl:table-fixed w-full mt-6">
       <thead class="uppercase border-b-2 border-black font-bold text-left text-lg">
         <tr>
           <th>Date</th>
@@ -109,15 +109,11 @@ const editModal = ref(false);
       </tbody>
     </table>
 
-    <div v-else>
-      LOADING
-    </div>
-
     <!-- Add and Edit Modal -->
     <div v-if="openModal">
       <TransactionModal
         v-on:cancel="() => openModal = false"
-        v-on:create="() => openModal = false"
+        v-on:create="() => {openModal = false; transactionStore.refresh()}"
         :edit="editModal"
         :start-date="date"
       />

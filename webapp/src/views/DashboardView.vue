@@ -13,12 +13,16 @@ function decDate() {
   const copyDate = new Date(currentDate.value);
   copyDate.setMonth(copyDate.getMonth() - 1);
   currentDate.value = copyDate;
+
+  transactionStore.retrieve(currentDate.value);
 }
 
 function incDate() {
   const copyDate = new Date(currentDate.value);
   copyDate.setMonth(copyDate.getMonth() + 1);
   currentDate.value = copyDate;
+
+  transactionStore.retrieve(currentDate.value);
 }
 
 // Transactions
@@ -35,7 +39,7 @@ onMounted(() => {
     currentDate.value.getFullYear(), currentDate.value.getMonth(), 1
   );
 
-  transactionStore.retrieve();
+  transactionStore.retrieve(currentDate.value);
   categoryStore.retrieve();
 })
 

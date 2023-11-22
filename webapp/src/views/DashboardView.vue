@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import MonthNavigation from '@/components/MonthNavigation.vue';
-import { ref, onMounted } from 'vue';
 import TransactionsList from '@/components/TransactionsList.vue';
+import NetProfit from '@/components/NetProfit.vue';
+import { ref, onMounted } from 'vue';
 import { useTransactionStore } from '@/stores/transaction';
 import { useCategoryStore } from '@/stores/category';
 
@@ -48,26 +49,40 @@ onMounted(() => {
 <template>
   <div class="flex flex-col w-full p-2 h-screen">
 
-    <!--Top header which includes the month and net worth component-->
-    <header
-      class="flex flex-grow-0 justify-center items-center mb-2 border rounded-md border-black/30"
-    >
-      <MonthNavigation
-        :date="currentDate"
-        @inc="() => incDate()"
-        @dec="() => decDate()"
-      />
-    </header>
+    <!-- First row which includes the month selector, monthly review and net worth component-->
+    <div class="flex flex-grow-0 mb-2">
+      <div class="flex flex-col flex-grow gap-2 xl:flex-row">
+        <div class="flex xl:w-1/2 border rounded-md border-black/30">
+          <MonthNavigation
+            :date="currentDate"
+            @inc="() => incDate()"
+            @dec="() => decDate()"
+          />
+        </div>
+        <div class="flex xl:w-1/4">
+          <NetProfit
+            :date="currentDate"
+          />
+        </div>
+        <div class="flex xl:w-1/4 border rounded-md border-black/30 justify-center items-center">
+          NET WORTH
+        </div>        
+      </div>
+    </div>
 
-    <div class="flex flex-grow overflow-auto">
-      <section class="flex flex-col xl:flex-row gap-2 w-full">
+    <!-- Second row containing the transaction list, categories and accounts -->
+    <div class="flex grow overflow-auto">
+      <div class="flex flex-col xl:flex-row gap-2 w-full">
         <div class="xl:w-3/4 border rounded-md border-black/30">
           <TransactionsList
             :date="currentDate"
           />
         </div>
-        <div class="xl:w-1/4 border rounded-md border-black/30">ACCOUNTS</div>
-      </section>
+        <div class="flex flex-col gap-2 xl:w-1/4">
+          <div class="flex h-1/2 border rounded-md border-black/30 justify-center items-center">ACCOUNTS</div>
+          <div class="flex h-1/2 border rounded-md border-black/30 justify-center items-center">CATEGORIES</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>

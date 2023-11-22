@@ -19,7 +19,7 @@ const displayDate = computed(() => {
 </script>
 
 <template>
-  <div class="flex align-middle">
+  <div class="flex flex-grow align-middle justify-center items-center">
     <i
       class="ti text-2xl mr-2 hover:cursor-pointer"
       :class="{'ti-arrow-big-left': !leftHover, 'ti-arrow-big-left-filled': leftHover}"

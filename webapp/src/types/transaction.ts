@@ -1,12 +1,9 @@
-type TransactionCategory = {
-    _id: string;
-    name: string;
-}
+import type { Category } from "@/types/category";
 
 export type Transaction = {
     _id: string;
     amount: number;
     date: string;
     name: string;
-    category: TransactionCategory;
+    category: Category;
 }

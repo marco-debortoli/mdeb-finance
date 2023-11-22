@@ -85,6 +85,45 @@ export const useTransactionStore = defineStore(
         });
 
         return response;
+      },
+
+      async update(
+        id: string, date: string, amount: number, category: string, name: string
+      ) {
+        // First we should convert our date - which is a YYYY-MM-DD string to the proper format
+        const updateDate = dayjs(date).startOf('day');
+
+        const updateData = {
+          date: updateDate.local().format(),
+          amount: amount,
+          category: category,
+          name: name
+        };
+
+        const response = await fetch(
+          `http://localhost:8080/api/v1/transactions/${id}`,
+          {
+          method: "put",
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+
+          //make sure to serialize your JSON body
+          body: JSON.stringify(updateData)
+        });
+
+        return response;
+      },
+
+      async delete(id: string) {
+        const response = await fetch(
+          `http://localhost:8080/api/v1/transactions/${id}`,
+          {
+          method: "delete"
+        });
+
+        return response;
       }
     },
   }

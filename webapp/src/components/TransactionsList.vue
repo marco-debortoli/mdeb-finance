@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import TransactionModal from '@/components/TransactionModal.vue';
 import { useTransactionStore } from '@/stores/transaction';
+import type { Transaction } from '@/types/transaction';
 
 const props = defineProps<{
   date: Date
@@ -57,7 +58,14 @@ function formatCurrency(amount: number) {
 
 // Add and edit
 const openModal = ref(false);
-const editModal = ref(false);
+const editTransaction = ref<Transaction | undefined>(undefined);
+
+function closeTransactionModal(refresh: boolean = false) {
+  openModal.value = false;
+  editTransaction.value = undefined;
+
+  if (refresh) transactionStore.refresh();
+}
 
 </script>
 
@@ -73,7 +81,7 @@ const editModal = ref(false);
       <div class="block">
         <button
           class="border px-4 py-1 rounded-lg border-black/50 hover:border-black align-middle"
-          @click="() => { editModal = false; openModal = true }"
+          @click="() => { openModal = true }"
         >
           <i class="ti ti-plus hover:cursor-pointer"/>
           Add
@@ -100,7 +108,7 @@ const editModal = ref(false);
             <td>{{ transaction.name }}</td>
             <td
               class="text-center hover:cursor-pointer hover:underline"
-              @click="() => { editModal = true; openModal = true }"
+              @click="() => { editTransaction = transaction; openModal = true }"
             >
               <small>Edit</small>
             </td>
@@ -109,12 +117,28 @@ const editModal = ref(false);
       </tbody>
     </table>
 
+    <div
+      class="
+        flex flex-col mt-2 border border-dashed border-black/30
+        rounded-md h-60 text-center justify-center text-black/30
+      "
+      v-if="
+        transactionStore.sortedTransactions.length == 0
+        && !transactionStore.loading
+      "
+    >
+      <i class="ti ti-file-x text-5xl"></i>
+      <span class="uppercase">NO TRANSACTIONS</span>
+    </div>
+
     <!-- Add and Edit Modal -->
     <div v-if="openModal">
       <TransactionModal
-        v-on:cancel="() => openModal = false"
-        v-on:create="() => {openModal = false; transactionStore.refresh()}"
-        :edit="editModal"
+        v-on:cancel="() => closeTransactionModal(false)"
+        v-on:create="() => closeTransactionModal(true)"
+        v-on:update="() => closeTransactionModal(true)"
+        v-on:delete="() => closeTransactionModal(true)"
+        :edit-transaction="editTransaction"
         :start-date="date"
       />
     </div>

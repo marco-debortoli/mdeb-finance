@@ -70,8 +70,8 @@ function closeTransactionModal(refresh: boolean = false) {
 </script>
 
 <template>
-  <div class="block py-6 px-10 w-full h-full relative">
-    <div class="flex justify-between">
+  <div class="flex flex-col py-6 px-10 w-full h-full relative">
+    <div class="flex justify-between mb-6">
       <div class="block">
         <h2 class="text-2xl font-bold uppercase"># Transactions</h2>
         <small class="text-xs hidden xl:block">
@@ -89,33 +89,35 @@ function closeTransactionModal(refresh: boolean = false) {
       </div>
     </div>
 
-    <table class="table-auto xl:table-fixed w-full mt-6">
-      <thead class="uppercase border-b-2 border-black font-bold text-left text-lg">
-        <tr>
-          <th>Date</th>
-          <th>Category</th>
-          <th class="w-36">Amount</th>
-          <th>Description</th>
-          <th class="w-12"></th>
-        </tr>
-      </thead>
-      <tbody class="text-sm">
-        <template v-for="transaction in transactionStore.sortedTransactions" v-bind:key="transaction._id">
-          <tr class="border-b border-black/25">
-            <td class="font-semibold">{{ formatTransactionDate(transaction.date) }}</td>
-            <td>{{ transaction.category.name }}</td>
-            <td>{{ formatCurrency(transaction.amount) }}</td>
-            <td>{{ transaction.name }}</td>
-            <td
-              class="text-center hover:cursor-pointer hover:underline"
-              @click="() => { editTransaction = transaction; openModal = true }"
-            >
-              <small>Edit</small>
-            </td>
+    <div class="overflow-auto">
+      <table class="table-auto xl:table-fixed w-full">
+        <thead class="uppercase border-b-2 border-black font-bold text-left text-lg">
+          <tr>
+            <th>Date</th>
+            <th>Category</th>
+            <th class="w-36">Amount</th>
+            <th>Description</th>
+            <th class="w-12"></th>
           </tr>
-        </template>
-      </tbody>
-    </table>
+        </thead>
+        <tbody class="text-sm">
+          <template v-for="transaction in transactionStore.sortedTransactions" v-bind:key="transaction._id">
+            <tr class="border-b border-black/25">
+              <td class="font-semibold">{{ formatTransactionDate(transaction.date) }}</td>
+              <td>{{ transaction.category.name }}</td>
+              <td>{{ formatCurrency(transaction.amount) }}</td>
+              <td>{{ transaction.name }}</td>
+              <td
+                class="text-center hover:cursor-pointer hover:underline"
+                @click="() => { editTransaction = transaction; openModal = true }"
+              >
+                <small>Edit</small>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
 
     <div
       class="

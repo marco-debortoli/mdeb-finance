@@ -46,11 +46,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col w-full h-full">
+  <div class="flex flex-col w-full p-2 h-screen">
 
     <!--Top header which includes the month and net worth component-->
     <header
-      class="flex justify-center items-center h-12 mb-2 border rounded-md border-black/30"
+      class="flex flex-grow-0 justify-center items-center mb-2 border rounded-md border-black/30"
     >
       <MonthNavigation
         :date="currentDate"
@@ -59,13 +59,15 @@ onMounted(() => {
       />
     </header>
 
-    <section class="grid grid-cols-1 xl:grid-cols-4 h-screen gap-2">
-      <div class="xl:col-span-3 border rounded-md border-black/30">
-        <TransactionsList
-          :date="currentDate"
-        />
-      </div>
-      <div class="xl:col-span-1 border rounded-md border-black/30">ACCOUNTS</div>
-    </section>
+    <div class="flex flex-grow overflow-auto">
+      <section class="flex flex-col xl:flex-row gap-2 w-full">
+        <div class="xl:w-3/4 border rounded-md border-black/30">
+          <TransactionsList
+            :date="currentDate"
+          />
+        </div>
+        <div class="xl:w-1/4 border rounded-md border-black/30">ACCOUNTS</div>
+      </section>
+    </div>
   </div>
 </template>

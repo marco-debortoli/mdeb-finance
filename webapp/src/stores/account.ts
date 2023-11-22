@@ -42,6 +42,13 @@ export const useAccountStore = defineStore(
         }
       },
 
+      async refresh() {
+        if (this.date) {
+          return this.retrieve(this.date)
+        }
+        return this.retrieve();
+      },
+
       async addValue(id: string, date: Date, amount: number) {
         const url = `http://localhost:8080/api/v1/accounts/${id}/set_value`;
 

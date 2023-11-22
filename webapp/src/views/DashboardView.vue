@@ -41,7 +41,7 @@ onMounted(() => {
   );
 
   transactionStore.retrieve(currentDate.value);
-  accountStore.retrieve(currentDate.value);
+  accountStore.retrieve();
   categoryStore.retrieve();
 })
 

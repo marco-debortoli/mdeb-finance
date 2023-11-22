@@ -67,7 +67,7 @@ function saveValue() {
   accountStore.addValue(
     props.account._id, props.date, newValue.value
   ).then(() => {
-    accountStore.retrieve(props.date);
+    accountStore.refresh();
     edit.value = false;
     newValue.value = 0;
   });

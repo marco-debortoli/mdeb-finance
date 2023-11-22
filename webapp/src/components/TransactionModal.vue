@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Category } from '@/types/category';
+import { useCategoryStore } from '@/stores/category';
 import { computed, ref } from 'vue';
 
 const emit = defineEmits(
@@ -9,8 +9,9 @@ const emit = defineEmits(
 const props = defineProps<{
   edit: boolean
   startDate: Date
-  categories: Category[]
 }>();
+
+const categoryStore = useCategoryStore();
 
 let createForm = ref(
   {
@@ -115,7 +116,7 @@ function addTransaction() {
                 v-model="createForm.category"
                 class="block w-full rounded-md border border-black/30 py-1 px-4 bg-white"
               >
-                <template v-for="category in categories" :key="category._id">
+                <template v-for="category in categoryStore.categories" :key="category._id">
                   <option :value="category._id">{{ category.name }}</option>
                 </template>
               </select>

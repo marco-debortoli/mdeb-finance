@@ -1,25 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import TransactionModal from '@/components/TransactionModal.vue';
-import type { Transaction } from '@/types/transaction';
-import type { Category } from '@/types/category';
+import { useTransactionStore } from '@/stores/transaction';
 
 const props = defineProps<{
-  transactions: Transaction[]
-  categories: Category[]
-  loading: boolean
   date: Date
 }>();
 
-const sortedTransactions = computed(() => {
-  const sorted = [...props.transactions].sort((a, b) => {
-    if (a.date < b.date) {
-      return -1;
-    }
-    return 1;
-  });
-  return sorted;
-});
+const transactionStore = useTransactionStore();
 
 const startDate = computed(() => {
   const options: Intl.DateTimeFormatOptions = {
@@ -93,7 +81,7 @@ const editModal = ref(false);
       </div>
     </div>
 
-    <table class="table-auto xl:table-fixed w-full mt-6" v-if="!loading">
+    <table class="table-auto xl:table-fixed w-full mt-6" v-if="!transactionStore.loading">
       <thead class="uppercase border-b-2 border-black font-bold text-left text-lg">
         <tr>
           <th>Date</th>
@@ -104,7 +92,7 @@ const editModal = ref(false);
         </tr>
       </thead>
       <tbody class="text-sm">
-        <template v-for="transaction in sortedTransactions" v-bind:key="transaction._id">
+        <template v-for="transaction in transactionStore.sortedTransactions" v-bind:key="transaction._id">
           <tr class="border-b border-black/25">
             <td class="font-semibold">{{ formatTransactionDate(transaction.date) }}</td>
             <td>{{ transaction.category.name }}</td>
@@ -130,7 +118,6 @@ const editModal = ref(false);
       <TransactionModal
         v-on:cancel="() => openModal = false"
         v-on:create="() => openModal = false"
-        :categories="categories"
         :edit="editModal"
         :start-date="date"
       />

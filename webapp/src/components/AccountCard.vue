@@ -50,10 +50,6 @@ const lastMonthAbsoluteDiff = computed(() => {
 });
 
 // Date & Colour Formatting
-function formatDate(date: string | undefined) {
-  return dayjs(date).local().format("MMMM");
-};
-
 function formatColour(amount: number) {
   if (amount > 0) return 'text-green-700';
   if (amount == 0) return 'text-current';
@@ -79,7 +75,6 @@ function saveValue() {
   <div class="flex border border-black rounded-lg py-2 px-4 shadow-md justify-between">
     <div class="flex flex-col justify-center">
       <span class="font-bold">{{ account.name }}</span>
-      <span class="text-xs">{{ formatDate(accountValue?.date) }}</span>
     </div>
 
     <div class="flex flex-col text-right">

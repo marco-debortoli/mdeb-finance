@@ -14,7 +14,17 @@ export const useAccountStore = defineStore(
         date: null as Nullable<Date>
       }
     ),
-    getters: {},
+    getters: {
+      debitAccounts(state) {
+        return state.accounts.filter((acc) => acc.type == "debit");
+      },
+      creditAccounts(state) {
+        return state.accounts.filter((acc) => acc.type == "credit");
+      },
+      investAccounts(state) {
+        return state.accounts.filter((acc) => acc.type == "investment");
+      },
+    },
     actions: {
       async retrieve(date: Date | null = null) {
         this.date = date;

@@ -59,7 +59,7 @@ function formatColour(amount: number) {
 </script>
 
 <template>
-  <div class="flex flex-col gap-y-2" v-if="thisMonthAccounts.length > 0">
+  <div class="flex flex-col gap-y-2 text-sm" v-if="thisMonthAccounts.length > 0">
     <div class="uppercase underline flex justify-center">
       {{ accType }}
     </div>

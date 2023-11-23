@@ -1,6 +1,7 @@
 import type { Account } from '@/types/account';
 import { defineStore } from 'pinia'
 import dayjs from 'dayjs';
+import { apiGet, apiPost } from '@/tools/api';
 
 type Nullable<T> = T | null;
 
@@ -32,21 +33,21 @@ export const useAccountStore = defineStore(
       async retrieve(date: Date | null = null) {
         this.date = date;
 
-        let url = "http://localhost:8080/api/v1/accounts";
+        let url = "/api/v1/accounts";
 
         if (date !== null) {
             const startDate = dayjs(date).startOf('month');
-            url = `http://localhost:8080/api/v1/accounts?date=${startDate.local().format()}`
+            url = `/api/v1/accounts?date=${startDate.local().format()}`
         }
 
         this.loading = true;
         this.accounts = [];
 
-        const response = await fetch(url);
+        const response = await apiGet(url);
 
         this.loading = false;
 
-        if (response.status != 200) {
+        if (response === undefined || response.status != 200) {
           console.log("Failed to fetch accounts")
           return response;
         } else {
@@ -63,24 +64,15 @@ export const useAccountStore = defineStore(
       },
 
       async addValue(id: string, date: Date, amount: number) {
-        const url = `http://localhost:8080/api/v1/accounts/${id}/set_value`;
-
         const payload = {
             value: amount,
             date: dayjs(date).startOf('month').local().format() 
         }
 
-        const response = await fetch(
-          url,
-          {
-          method: "post",
-          headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-          },
-
-          body: JSON.stringify(payload)
-        });
+        const response = await apiPost(
+          `/api/v1/accounts/${id}/set_value`,
+          payload
+        );
 
         return response;
 

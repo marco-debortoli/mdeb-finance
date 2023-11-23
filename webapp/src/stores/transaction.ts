@@ -1,6 +1,7 @@
 import type { Transaction } from '@/types/transaction';
 import { defineStore } from 'pinia'
 import dayjs from 'dayjs';
+import { apiDelete, apiGet, apiPost, apiPut } from '@/tools/api';
 
 export const useTransactionStore = defineStore(
   'transaction',
@@ -38,13 +39,13 @@ export const useTransactionStore = defineStore(
         this.loading = true;
         this.transactions = [];
 
-        const response = await fetch(
-          `http://localhost:8080/api/v1/transactions?start_date=${startDateFilter}&end_date=${endDateFilter}`
+        const response = await apiGet(
+          `/api/v1/transactions?start_date=${startDateFilter}&end_date=${endDateFilter}`
         );
 
         this.loading = false;
 
-        if (response.status != 200) {
+        if (response === undefined || response.status != 200) {
           console.log("Failed to fetch transactions")
           return response;
         } else {
@@ -71,18 +72,10 @@ export const useTransactionStore = defineStore(
           name: name
         };
 
-        const response = await fetch(
-          "http://localhost:8080/api/v1/transactions",
-          {
-          method: "post",
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-
-          //make sure to serialize your JSON body
-          body: JSON.stringify(createData)
-        });
+        const response = await apiPost(
+          '/api/v1/transactions',
+          createData
+        );
 
         return response;
       },
@@ -100,30 +93,16 @@ export const useTransactionStore = defineStore(
           name: name
         };
 
-        const response = await fetch(
-          `http://localhost:8080/api/v1/transactions/${id}`,
-          {
-          method: "put",
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-
-          //make sure to serialize your JSON body
-          body: JSON.stringify(updateData)
-        });
+        const response = await apiPut(
+          `/api/v1/transactions/${id}`,
+          updateData
+        );
 
         return response;
       },
 
       async delete(id: string) {
-        const response = await fetch(
-          `http://localhost:8080/api/v1/transactions/${id}`,
-          {
-          method: "delete"
-        });
-
-        return response;
+        return await apiDelete(`/api/v1/transactions/${id}`);
       }
     },
   }

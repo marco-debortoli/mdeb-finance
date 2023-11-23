@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  frontend:
+    image: mdeb-ledger-frontend:latest
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://backend:8080
+    container_name: mdeb-ledger-frontend
+    ports:
+      - 8000:80
+
+  backend:
+   image: mdeb-ledger-backend:latest
+   restart: unless-stopped
+   environment:
+     DB_URL: mongodb://root:password@mongo:27017
+     PORT: 8080
+   container_name: mdeb-ledger-backend
+   ports:
+     - 8080:8080
+   depends_on:
+     - mongo
+
+  mongo:
+    image: mongo:latest
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    container_name: mdeb-ledger-mongo
+    volumes:
+      - ./mongodata:/data/db

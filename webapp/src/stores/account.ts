@@ -24,6 +24,9 @@ export const useAccountStore = defineStore(
       investAccounts(state) {
         return state.accounts.filter((acc) => acc.type == "investment");
       },
+      netWorthAccounts(state) {
+        return state.accounts.filter((acc) => acc.include_net_worth);
+      }
     },
     actions: {
       async retrieve(date: Date | null = null) {

@@ -1,20 +1,67 @@
 <script setup lang="ts">
+import { useAccountStore } from '@/stores/account';
+import { getActiveAccountsForDate, absoluteAccountValueDiff } from '@/tools/account';
 import { formatCurrency } from '@/tools/currency';
+import dayjs from 'dayjs';
 import { computed } from 'vue'; 
 
-defineProps<{
+const props = defineProps<{
   date: Date
 }>();
 
-const netWorth = computed(() => {
-  return 0;
+const accountStore = useAccountStore();
+
+const lastMonth = computed(() => {
+  return dayjs(props.date).startOf('month').subtract(1, 'month').toDate();
 });
 
-const color = computed(() => {
-  if (netWorth.value > 0) return 'text-green-700';
-  if (netWorth.value == 0) return 'text-current';
+const thisMonthAccounts = computed(() => {
+  return getActiveAccountsForDate(accountStore.netWorthAccounts, props.date);
+});
+
+const lastMonthAccounts = computed(() => {
+  return getActiveAccountsForDate(accountStore.netWorthAccounts, lastMonth.value);
+});
+
+const thisMonthNetWorth = computed(() => {
+  let netWorth = 0;
+  const currentDate = dayjs(props.date);
+
+  thisMonthAccounts.value.forEach((a) => {
+    const av = a.values.find((v) => currentDate.isSame(dayjs(v.date)));
+    if (av) {
+      if (a.type === "debit" || a.type === "investment") netWorth += av.value;
+      else netWorth -= av.value;
+    }
+  });
+
+  return netWorth;
+});
+
+const lastMonthNetWorth = computed(() => {
+  let netWorth = 0;
+  const currentDate = dayjs(lastMonth.value);
+
+  lastMonthAccounts.value.forEach((a) => {
+    const av = a.values.find((v) => currentDate.isSame(dayjs(v.date)));
+    if (av) {
+      if (a.type === "debit" || a.type === "investment") netWorth += av.value;
+      else netWorth -= av.value;
+    }
+  });
+
+  return netWorth;
+});
+
+const netWorthDiff = computed(() => {
+  return absoluteAccountValueDiff(thisMonthNetWorth.value, lastMonthNetWorth.value);
+});
+
+function formatColour(amount: number) {
+  if (amount > 0) return 'text-green-700';
+  if (amount == 0) return 'text-current';
   return 'text-red-700';
-})
+}
 
 </script>
 
@@ -24,10 +71,9 @@ const color = computed(() => {
       NET WORTH
     </div>
 
-    <div class="flex justify-center flex-grow">
-      <span class="font-black" :class="color">
-        {{ formatCurrency(netWorth, true) }}
-      </span>
+    <div class="flex justify-center flex-grow font-black">
+      <span>{{ formatCurrency(thisMonthNetWorth) }}&nbsp;/&nbsp;</span> 
+      <span :class="formatColour(netWorthDiff)">{{ formatCurrency(netWorthDiff, true) }}</span>
     </div>
   </div>
 </template>

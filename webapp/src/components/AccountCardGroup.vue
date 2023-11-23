@@ -15,7 +15,7 @@ const accountStore = useAccountStore();
 
 const lastMonth = computed(() => {
   return dayjs(props.date).startOf('month').subtract(1, 'month').toDate();
-})
+});
 
 const accounts = computed(() => {
   switch (props.accType) {
@@ -51,9 +51,9 @@ const lastMonthDiff = computed(() => {
 });
 
 function formatColour(amount: number) {
-  if (amount > 0) return 'text-green-700';
-  if (amount == 0) return 'text-current';
-  return 'text-red-700';
+  if (amount > 0) return props.accType === 'credit' ? 'text-red-700' : 'text-green-700';
+  if (amount === 0) return 'text-current';
+  return props.accType === 'credit' ? 'text-green-700' : 'text-red-700';
 }
 
 </script>

@@ -51,9 +51,9 @@ const lastMonthAbsoluteDiff = computed(() => {
 
 // Date & Colour Formatting
 function formatColour(amount: number) {
-  if (amount > 0) return 'text-green-700';
+  if (amount > 0) return props.account.type === 'credit' ? 'text-red-700' : 'text-green-700';
   if (amount == 0) return 'text-current';
-  return 'text-red-700';
+  return props.account.type === 'credit' ? 'text-green-700' : 'text-red-700';
 }
 
 // Saving

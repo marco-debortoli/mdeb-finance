@@ -9,7 +9,7 @@ services:
       VITE_API_URL: http://backend:8080
     container_name: mdeb-ledger-frontend
     ports:
-      - 8000:80
+      - 8000:8000
 
   backend:
     build: ../server/

@@ -5,8 +5,6 @@ services:
     build: ../webapp/
     image: mdeb-ledger-frontend
     restart: unless-stopped
-    environment:
-      VITE_API_URL: http://backend:8080
     container_name: mdeb-ledger-frontend
     ports:
       - 8000:8080

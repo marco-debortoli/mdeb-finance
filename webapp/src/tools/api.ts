@@ -1,5 +1,9 @@
+function getApiURL() {
+  return localStorage.getItem('apiURL') || import.meta.env.VITE_API_URL || 'http://127.0.0.1:8080';
+}
+
 export async function apiGet(uri: string) {
-  const URL = import.meta.env.VITE_API_URL;
+  const URL = getApiURL();
 
   if (!URL) {
     console.log("Failed to send request because API_URL is not set");
@@ -25,7 +29,7 @@ export async function apiGet(uri: string) {
 };
 
 export async function apiPost(uri: string, payload: object) {
-  const URL = import.meta.env.VITE_API_URL;
+  const URL = getApiURL();
 
   if (!URL) {
     console.log("Failed to send request because API_URL is not set");
@@ -53,7 +57,7 @@ export async function apiPost(uri: string, payload: object) {
 };
 
 export async function apiPut(uri: string, payload: object) {
-  const URL = import.meta.env.VITE_API_URL;
+  const URL = getApiURL();
 
   if (!URL) {
     console.log("Failed to send request because API_URL is not set");
@@ -81,7 +85,7 @@ export async function apiPut(uri: string, payload: object) {
 };
 
 export async function apiDelete(uri: string) {
-  const URL = import.meta.env.VITE_API_URL;
+  const URL = getApiURL();
 
   if (!URL) {
     console.log("Failed to send request because API_URL is not set");

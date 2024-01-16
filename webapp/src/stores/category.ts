@@ -28,6 +28,7 @@ export const useCategoryStore = defineStore(
     actions: {
       async retrieve() {
         this.loading = true;
+        this.categories = [];
 
         const response = await apiGet('/api/v1/categories');
 
